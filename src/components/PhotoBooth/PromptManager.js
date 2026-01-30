@@ -9,6 +9,7 @@ const DEFAULT_PROMPTS = [
         id: 'style_1',
         name: 'Futuristic Archaeologist',
         description: 'Sci-fi gear at Giza Pyramid',
+        sampleImage: '/assets/sample_archaeologist.jpg', // Placeholder path
         prompt: JSON.stringify({
             "reference": "use uploaded image as facial reference, preserve original face and identity exactly",
             "subject_role": "Futuristic Archaeologist Hero",
@@ -28,12 +29,12 @@ const DEFAULT_PROMPTS = [
             "camera": "Low angle, wide lens, shallow depth of field focusing on the subject and the artifact",
             "tech_specs": "8k resolution, hyper-realistic, unreal engine 5 render style, movie poster composition"
         }, null, 2),
-        sampleImage: ''
     },
     {
         id: 'style_2',
         name: '3D Caricature Toy',
         description: 'Pixar-style vinyl collectible',
+        sampleImage: '',
         prompt: JSON.stringify({
             "reference": "use uploaded image as facial reference, preserve original face and identity exactly",
             "character_type": "3D caricature-style collectible figure, cute proportions",
@@ -50,19 +51,19 @@ const DEFAULT_PROMPTS = [
             "style": "Pixar-style 3D render, vibrant colors, premium vinyl toy texture",
             "texture": "smooth plastic skin, fabric textures on clothes"
         }, null, 2),
-        sampleImage: ''
     },
     {
         id: 'style_3',
         name: 'Keeper of Time',
         description: 'Surreal hourglass fantasy',
+        sampleImage: '',
         prompt: "A hyper-realistic surreal portrait of the user (based on uploaded reference) acting as the Keeper of Time inside an ancient Egyptian tomb. The subject is holding a large, ornate antique hourglass. Instead of sand, the hourglass is filled with tiny crumbling glowing pyramids falling from the top bulb to the bottom. The subject's body is partially turning into swirling sand particles on the right side, blending into the desert wind. Outfit: Flowing linen robes mixed with 1920s explorer gear (suspenders, white shirt). Expression: Melancholic but wise, staring deeply into the hourglass. Background: Dark sandstone walls covered in hieroglyphs that are glowing faintly gold. Lighting: Dramatic chiaroscuro, a single beam of light hitting the hourglass and the subject's face. Style: Cinematic fantasy realism, detailed particle effects, 8k resolution, masterpiece, mystical atmosphere.",
-        sampleImage: ''
     },
     {
         id: 'style_4',
         name: 'Map Illusion',
         description: 'Climbing out of vintage map',
+        sampleImage: '',
         prompt: JSON.stringify({
             "subject": {
                 "description": "A hyper-realistic optical-illusion. The user from the uploaded photo appears to be climbing out of a vintage archaeological map spread on a wooden desk.",
@@ -95,12 +96,12 @@ const DEFAULT_PROMPTS = [
             },
             "negative_prompt": "cartoon, flat 2d, cgi, distortion, bad hands"
         }, null, 2),
-        sampleImage: ''
     },
     {
         id: 'style_5',
         name: 'Journal Collage',
         description: 'Scrapbook investigation board',
+        sampleImage: '',
         prompt: JSON.stringify({
             "variables": {
                 "THEME": "Egypt Exploration"
@@ -125,26 +126,29 @@ const DEFAULT_PROMPTS = [
                 "avoid": ["Modern digital graphics", "Neon colors", "Sci-fi elements"]
             }
         }, null, 2),
-        sampleImage: ''
     },
     {
         id: 'style_6',
         name: 'Tomb Triptych',
         description: '3-panel cinematic story',
+        sampleImage: '',
         prompt: "A horizontal triptych collage (3 panels) depicting a narrative of discovery in an Egyptian tomb. Photorealistic cinematic style. Left Panel (The Search): The subject (user reference) stands in a narrow, dark stone corridor, holding a flaming torch high. Exploring. Expression: Focused, squinting into the darkness. Lighting: Warm orange glow from the torch against cold blue shadows. Outfit: Dusty grey t-shirt, leather gloves. Middle Panel (The Puzzle): Extreme close-up or over-the-shoulder shot. The subject is blowing dust off a stone wall to reveal a glowing blue hieroglyph puzzle mechanism. The subject's hand is reaching out to press a specific stone. Focus: Sharp details on the texture of the stone and the dust particles in the air. Right Panel (The Treasure): The subject stands in a vast, gold-filled chamber, looking upward in awe. Background: Massive statues and piles of gold, illuminated by a beam of sunlight from the ceiling. Expression: Pure joy and amazement, mouth slightly open. Pose: Arms slightly open as if embracing the discovery. Technical: Cinematic color grading, 8k, aspect ratio 3:1 (panoramic feel composed of 3 vertical slices), consistent lighting direction across panels.",
-        sampleImage: ''
     }
 ];
 
 export const getPrompts = async () => {
     try {
         const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+
+        // If snapshot is empty, return default prompts immediately (don't force write in client constantly or it's slow)
+        // If initialized properly in a real app, we'd write once. Here we just fallback.
         if (querySnapshot.empty) {
-            // Initialize if empty
-            await initializePrompts();
+            console.log("No prompts found in DB. Returning defaults.");
             return DEFAULT_PROMPTS;
         }
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => a.id.localeCompare(b.id));
+
+        const fetchedPrompts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => a.id.localeCompare(b.id));
+        return fetchedPrompts.length > 0 ? fetchedPrompts : DEFAULT_PROMPTS;
     } catch (error) {
         console.error("Error getting prompts:", error);
         return DEFAULT_PROMPTS;

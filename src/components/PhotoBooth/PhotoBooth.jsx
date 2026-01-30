@@ -179,12 +179,17 @@ const PhotoBooth = () => {
 
                 {/* STEP 2: CAPTURE */}
                 {step === 'capture' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full max-w-4xl flex items-center justify-center bg-black/50 border-4 border-white/20 rounded-xl overflow-hidden aspect-video">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full max-w-4xl flex items-center justify-center bg-black/50 border-4 border-white/20 rounded-xl overflow-hidden min-h-[400px]">
                         <Webcam
                             audio={false}
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
-                            className="w-full h-full object-cover fa-flip-horizontal"
+                            videoConstraints={{
+                                width: 1280,
+                                height: 720,
+                                facingMode: "user"
+                            }}
+                            className="w-full h-auto max-h-[70vh] object-contain"
                             mirrored={true}
                         />
 
