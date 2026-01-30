@@ -61,75 +61,131 @@ const PhotoBooth = () => {
         setStep('processing');
 
         try {
-            // 1. Load Base Image (Webcam)
-            const baseImg = new Image();
-            baseImg.src = imageSrc;
-            await new Promise(r => baseImg.onload = r);
+            // Attempt Real AI Generation first
+            let generatedImageBlob = null;
+            let usedRealAI = false;
 
-            // 2. Prepare Canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = baseImg.width;
-            canvas.height = baseImg.height;
-            const ctx = canvas.getContext('2d');
-
-            // 3. Draw Base Image
-            ctx.drawImage(baseImg, 0, 0);
-
-            // 4. Draw Style Overlay (if exists)
-            if (selectedPrompt?.sampleImage) {
-                try {
-                    const overlayImg = new Image();
-                    overlayImg.crossOrigin = "anonymous";
-                    overlayImg.src = selectedPrompt.sampleImage;
-
-                    await new Promise((resolve, reject) => {
-                        overlayImg.onload = resolve;
-                        overlayImg.onerror = reject;
-                    });
-
-                    // Draw overlay with simulated blending
-                    ctx.globalCompositeOperation = 'screen';
-                    ctx.globalAlpha = 0.5; // Adjustable opacity
-                    ctx.drawImage(overlayImg, 0, 0, canvas.width, canvas.height);
-
-                    // Reset context
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.globalAlpha = 1.0;
-
-                    // Add atmospheric glow
-                    const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
-                    gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
-                    gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                } catch (overlayError) {
-                    console.warn("Could not load overlay for baking:", overlayError);
-                    // Continue without overlay if it fails (e.g. CORS)
-                }
-            }
-
-            // 5. Convert to Blob for upload
-            let blob;
             try {
-                blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
-            } catch (canvasError) {
-                console.warn("Canvas tainted, falling back to raw image:", canvasError);
-                const res = await fetch(imageSrc);
-                blob = await res.blob();
+                // Get the prompt text from the selected style
+                let promptText = selectedPrompt?.description || "High quality portrait";
+                try {
+                    const parsed = JSON.parse(selectedPrompt?.prompt);
+                    // Construct a rich prompt from the JSON fields if available
+                    if (parsed.subject_role) {
+                        promptText = `${parsed.subject_role}, ${parsed.setting}, ${parsed.outfit?.style}. ${parsed.atmosphere?.mood}. Photorealistic 8k.`;
+                    }
+                } catch (e) {
+                    promptText = selectedPrompt?.prompt || promptText;
+                }
+
+                console.log("Attempting Real AI with prompt:", promptText);
+
+                // Call our secure backend API
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: imageSrc,
+                        prompt: promptText
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.image) {
+                        const res = await fetch(data.image);
+                        generatedImageBlob = await res.blob();
+                        usedRealAI = true;
+                        console.log("Real AI Generation Successful!");
+                    }
+                } else {
+                    console.warn("Real AI API unavailable (likely no key), falling back to simulation.");
+                }
+
+            } catch (aiError) {
+                console.warn("Real AI failed, falling back:", aiError);
             }
 
-            const file = new File([blob], `capture_${Date.now()}.jpg`, { type: "image/jpeg" });
+            let file;
+            if (usedRealAI && generatedImageBlob) {
+                file = new File([generatedImageBlob], `ai_generated_${Date.now()}.jpg`, { type: "image/jpeg" });
+            } else {
+                // FALLBACK: Canvas Composition (Simulation)
+                // 1. Load Base Image (Webcam)
+                const baseImg = new Image();
+                baseImg.src = imageSrc;
+                await new Promise(r => baseImg.onload = r);
 
-            // 6. Upload
+                // 2. Prepare Canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = baseImg.width;
+                canvas.height = baseImg.height;
+                const ctx = canvas.getContext('2d');
+
+                // 3. Draw Base Image
+                ctx.drawImage(baseImg, 0, 0);
+
+                // 4. Draw Style Overlay (if exists)
+                if (selectedPrompt?.sampleImage) {
+                    try {
+                        const overlayImg = new Image();
+                        overlayImg.crossOrigin = "anonymous";
+                        overlayImg.src = selectedPrompt.sampleImage;
+
+                        await new Promise((resolve, reject) => {
+                            overlayImg.onload = resolve;
+                            overlayImg.onerror = reject;
+                        });
+
+                        // Draw overlay with simulated blending
+                        ctx.globalCompositeOperation = 'screen';
+                        ctx.globalAlpha = 0.5; // Adjustable opacity
+                        ctx.drawImage(overlayImg, 0, 0, canvas.width, canvas.height);
+
+                        // Reset context
+                        ctx.globalCompositeOperation = 'source-over';
+                        ctx.globalAlpha = 1.0;
+
+                        // Add atmospheric glow
+                        const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
+                        gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
+                        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    } catch (overlayError) {
+                        console.warn("Could not load overlay for baking:", overlayError);
+                        // Continue without overlay if it fails (e.g. CORS)
+                    }
+                }
+
+                // 5. Convert to Blob for upload
+                let blob;
+                try {
+                    blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+                } catch (canvasError) {
+                    console.warn("Canvas tainted, falling back to raw image:", canvasError);
+                    const res = await fetch(imageSrc);
+                    blob = await res.blob();
+                }
+                file = new File([blob], `capture_${Date.now()}.jpg`, { type: "image/jpeg" });
+            }
+
+            // Upload
             try {
                 const url = await uploadImage(file, 'generated_photos');
                 setFinalImageURL(url);
+
+                // If Real AI was used, we update the display source too so the user sees the new AI image immediately
+                if (usedRealAI) {
+                    setImgSrc(URL.createObjectURL(file));
+                }
             } catch (uploadError) {
                 console.error("Upload failed (expected if rules deny public writes):", uploadError);
             }
 
-            // Artificial delay
+            // Artificial delay (shorten if real AI already took time?)
+            // Real AI takes time, so we might not need extra delay, but let's keep it consistent.
             setTimeout(() => setStep('result'), 2000);
         } catch (error) {
             console.error("Error processing image:", error);
