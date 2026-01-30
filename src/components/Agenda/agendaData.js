@@ -5,8 +5,8 @@ export const agendaData = [
         day: '2026-01-31',
         start: '08:00',
         end: '12:00',
-        title: 'Team Check-in / Open Pit',
-        titleVi: 'Check-in đội thi / Mở khu vực Pit',
+        title: 'Team Check-in / Receive Information Package / Open Pit / Robot Clinic Open',
+        titleVi: 'Các đội check-in / Nhận Gói ấn phẩm / Mở Khu vực Pit / Mở Phòng Khám Robot',
         type: 'admin'
     },
     {
@@ -14,17 +14,17 @@ export const agendaData = [
         day: '2026-01-31',
         start: '08:00',
         end: '12:00',
-        title: 'Robot Inspection / Practice Matches',
-        titleVi: 'Kiểm tra Robot / Trận đấu tập',
+        title: "Robot Inspection at Team's Pit / Field Inspection",
+        titleVi: 'Kiểm tra Robot tại Khu vực Pit / Kiểm tra Hệ thống robot (Field Inspection)',
         type: 'tech'
     },
     {
         id: 'sat-3',
         day: '2026-01-31',
-        start: '08:05',
+        start: '08:00',
         end: '08:30',
         title: 'Drivers Meeting',
-        titleVi: 'Họp đội điều khiển',
+        titleVi: 'Họp Driver',
         type: 'meeting'
     },
     {
@@ -33,25 +33,34 @@ export const agendaData = [
         start: '08:30',
         end: '12:00',
         title: 'Team Judging Interview',
-        titleVi: 'Phỏng vấn Ban giám khảo',
+        titleVi: 'Phỏng vấn đội thi với Ban giám khảo',
         type: 'judging'
+    },
+    {
+        id: 'sat-lunch',
+        day: '2026-01-31',
+        start: '12:00',
+        end: '13:00',
+        title: 'Lunch Break',
+        titleVi: 'Nghỉ trưa',
+        type: 'break'
     },
     {
         id: 'sat-5',
         day: '2026-01-31',
-        start: '13:30',
-        end: '13:45',
+        start: '13:00',
+        end: '14:00',
         title: 'Welcome Meeting / Match Schedule Release',
-        titleVi: 'Chào mừng / Công bố lịch thi đấu',
+        titleVi: 'Chào đón / Công bố lịch đấu',
         type: 'meeting'
     },
     {
         id: 'sat-6',
         day: '2026-01-31',
-        start: '13:45',
+        start: '14:00',
         end: '15:30',
         title: 'Practice Matches',
-        titleVi: 'Trận đấu tập',
+        titleVi: 'Kiểm tra Hệ thống sân (Field Inspection) / Các trận đấu thử',
         type: 'practice'
     },
     {
@@ -60,17 +69,26 @@ export const agendaData = [
         start: '13:45',
         end: '15:00',
         title: "Dean's List Award Interview",
-        titleVi: "Phỏng vấn giải thưởng Dean's List",
+        titleVi: "Phỏng vấn Dean's List với Ban giám khảo",
         type: 'judging'
     },
     {
         id: 'sat-8',
         day: '2026-01-31',
-        start: '15:30',
+        start: '16:00',
         end: '18:30',
         title: 'Qualification Matches / Pit Interviews',
-        titleVi: 'Vòng loại / Phỏng vấn tại Pit',
+        titleVi: 'Vòng Sơ Loại / Phỏng vấn tại Pit',
         type: 'match'
+    },
+    {
+        id: 'sat-10',
+        day: '2026-01-31',
+        start: '19:00',
+        end: '',
+        title: 'Venue Closed / Pits Closed / Practice Fields Closed Robot Clinic Close',
+        titleVi: 'Đóng Khu vực thi đấu / Đóng Khu vực Pit / Đóng Sân tập / Đóng Phòng Khám Robot',
+        type: 'admin'
     },
 
     // Sunday, Feb 01
@@ -79,26 +97,26 @@ export const agendaData = [
         day: '2026-02-01',
         start: '07:00',
         end: '07:30',
-        title: 'Robot & Field Re-Inspection',
-        titleVi: 'Kiểm tra lại Robot & Sân',
+        title: 'Robot & Field Re-Inspection / Pits Open / Practice Fields Open / Robot Clinic Open',
+        titleVi: 'Kiểm tra lại Robot / Mở Khu vực Pit / Mở Sân tập / Mở Phòng Khám Robot',
         type: 'tech'
     },
     {
         id: 'sun-2',
         day: '2026-02-01',
         start: '08:00',
-        end: '08:30',
+        end: '08:45',
         title: 'Opening Ceremony',
-        titleVi: 'Lễ khai mạc',
+        titleVi: 'Lễ Khai mạc',
         type: 'ceremony'
     },
     {
         id: 'sun-3',
         day: '2026-02-01',
-        start: '08:30',
+        start: '08:45',
         end: '12:30',
         title: 'Qualification Matches / Pit Interviews',
-        titleVi: 'Vòng loại / Phỏng vấn tại Pit',
+        titleVi: 'Vòng Sơ Loại / Phỏng vấn tại Pit',
         type: 'match'
     },
     {
@@ -116,7 +134,7 @@ export const agendaData = [
         start: '13:00',
         end: '13:30',
         title: 'Alliance Selection',
-        titleVi: 'Chọn liên minh',
+        titleVi: 'Chọn Liên minh (6 đội)',
         type: 'major'
     },
     {
@@ -125,7 +143,7 @@ export const agendaData = [
         start: '13:30',
         end: '14:00',
         title: 'Break',
-        titleVi: 'Nghỉ giải lao',
+        titleVi: 'Giải lao',
         type: 'break'
     },
     {
@@ -134,7 +152,7 @@ export const agendaData = [
         start: '14:00',
         end: '17:30',
         title: 'Playoff Matches',
-        titleVi: 'Vòng loại trực tiếp',
+        titleVi: 'Vòng Loại trực tiếp',
         type: 'match'
     },
     {
@@ -142,8 +160,8 @@ export const agendaData = [
         day: '2026-02-01',
         start: '17:30',
         end: '18:30',
-        title: 'Closing Ceremony & Awards',
-        titleVi: 'Bế mạc & Trao giải',
+        title: 'Closing Ceremony, Awards and Advancement Announcement',
+        titleVi: 'Lễ Bế mạc và Trao giải',
         type: 'ceremony'
     }
 ];
