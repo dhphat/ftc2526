@@ -61,26 +61,79 @@ const PhotoBooth = () => {
         setStep('processing');
 
         try {
-            // Convert base64 to blob for upload
-            const res = await fetch(imageSrc);
-            const blob = await res.blob();
-            const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+            // 1. Load Base Image (Webcam)
+            const baseImg = new Image();
+            baseImg.src = imageSrc;
+            await new Promise(r => baseImg.onload = r);
 
-            // Upload to Firebase to get a shareable URL for QR Code
+            // 2. Prepare Canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = baseImg.width;
+            canvas.height = baseImg.height;
+            const ctx = canvas.getContext('2d');
+
+            // 3. Draw Base Image
+            ctx.drawImage(baseImg, 0, 0);
+
+            // 4. Draw Style Overlay (if exists)
+            if (selectedPrompt?.sampleImage) {
+                try {
+                    const overlayImg = new Image();
+                    overlayImg.crossOrigin = "anonymous";
+                    overlayImg.src = selectedPrompt.sampleImage;
+
+                    await new Promise((resolve, reject) => {
+                        overlayImg.onload = resolve;
+                        overlayImg.onerror = reject;
+                    });
+
+                    // Draw overlay with simulated blending
+                    ctx.globalCompositeOperation = 'screen';
+                    ctx.globalAlpha = 0.5; // Adjustable opacity
+                    ctx.drawImage(overlayImg, 0, 0, canvas.width, canvas.height);
+
+                    // Reset context
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.globalAlpha = 1.0;
+
+                    // Add atmospheric glow
+                    const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
+                    gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
+                    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                } catch (overlayError) {
+                    console.warn("Could not load overlay for baking:", overlayError);
+                    // Continue without overlay if it fails (e.g. CORS)
+                }
+            }
+
+            // 5. Convert to Blob for upload
+            let blob;
+            try {
+                blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+            } catch (canvasError) {
+                console.warn("Canvas tainted, falling back to raw image:", canvasError);
+                const res = await fetch(imageSrc);
+                blob = await res.blob();
+            }
+
+            const file = new File([blob], `capture_${Date.now()}.jpg`, { type: "image/jpeg" });
+
+            // 6. Upload
             try {
                 const url = await uploadImage(file, 'generated_photos');
                 setFinalImageURL(url);
             } catch (uploadError) {
                 console.error("Upload failed (expected if rules deny public writes):", uploadError);
-                // Fallback: If upload fails, just don't show QR or show fallback msg
-                // We still want to show the specific result so user can download locally
             }
 
-            // Artificial delay for "AI Processing" feeling
+            // Artificial delay
             setTimeout(() => setStep('result'), 2000);
         } catch (error) {
             console.error("Error processing image:", error);
-            alert("Failed to process local image. Please try again.");
+            alert("Failed to process image. Please try again.");
             setStep('select');
         }
     };
