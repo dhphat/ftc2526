@@ -156,14 +156,21 @@ const PhotoBooth = () => {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
                         <h2 className="text-4xl font-black text-center mb-12 uppercase tracking-tighter">Choose Your Character</h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                            {prompts.map(prompt => (
-                                <PromptCard
-                                    key={prompt.id}
-                                    prompt={prompt}
-                                    selected={selectedPrompt?.id === prompt.id}
-                                    onClick={setSelectedPrompt}
-                                />
-                            ))}
+                            {prompts.length === 0 ? (
+                                <div className="col-span-full text-center py-12 text-white/50">
+                                    <p>Loading styles...</p>
+                                    <p className="text-xs mt-2 text-red-500">If this persists, please refresh.</p>
+                                </div>
+                            ) : (
+                                prompts.map(prompt => (
+                                    <PromptCard
+                                        key={prompt.id}
+                                        prompt={prompt}
+                                        selected={selectedPrompt?.id === prompt.id}
+                                        onClick={setSelectedPrompt}
+                                    />
+                                ))
+                            )}
                         </div>
                         <div className="flex justify-center mt-12">
                             <button
