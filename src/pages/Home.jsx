@@ -46,7 +46,6 @@ const Home = () => {
             <div className="w-full max-w-5xl px-4 space-y-8 order-2">
                 <div className="border-b-4 border-black pb-4 text-center md:text-left">
                     <h3 className="text-3xl font-black uppercase text-black tracking-tighter italic">
-                        <span className="bg-black text-[#6ee7b7] px-2 mr-2">Resource</span>
                         {t('links.title')}
                     </h3>
                 </div>
@@ -80,8 +79,12 @@ const Home = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-4xl flex flex-col items-center order-3 mt-auto pt-12"
+                className="w-full max-w-4xl flex flex-col items-center order-3 mt-auto relative"
             >
+                {/* Divider */}
+                <div className="w-full border-t-4 border-black mb-12 opacity-20"></div>
+
+                {/* Branding Block */}
                 {/* Branding Block */}
                 <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16 w-full justify-center">
                     {/* Left Icon (Clock/Compass) */}
