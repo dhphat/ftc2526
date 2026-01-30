@@ -13,7 +13,7 @@ const PromptCard = ({ prompt, selected, onClick }) => (
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => onClick(prompt)}
-        className={`relative cursor - pointer rounded - xl overflow - hidden aspect - [4 / 5] border - 4 transition - all ${selected ? 'border-[#f97316] shadow-[0_0_20px_rgba(249,115,22,0.6)]' : 'border-black opacity-80 hover:opacity-100'} `}
+        className={`relative cursor-pointer rounded-xl overflow-hidden aspect-[4/5] border-4 transition-all ${selected ? 'border-[#f97316] shadow-[0_0_20px_rgba(249,115,22,0.6)]' : 'border-black opacity-80 hover:opacity-100'} `}
     >
         {prompt.sampleImage ? (
             <img src={prompt.sampleImage} alt={prompt.name} className="w-full h-full object-cover" />
@@ -46,8 +46,12 @@ const PhotoBooth = () => {
 
     useEffect(() => {
         const fetchPrompts = async () => {
+            console.log("Fetching prompts...");
             const data = await getPrompts();
-            setPrompts(data);
+            console.log("Fetched prompts:", data);
+            if (data && data.length > 0) {
+                setPrompts(data);
+            }
         };
         fetchPrompts();
     }, []);
@@ -140,11 +144,11 @@ const PhotoBooth = () => {
             {/* Header */}
             <div className="w-full max-w-6xl flex justify-between items-center mb-8 border-b-2 border-white/20 pb-4">
                 <h1 className="text-2xl font-black uppercase tracking-tighter italic text-[#f97316]">
-                    FTC Photobooth <span className="text-white not-italic text-sm ml-2 font-normal">AI Powered</span>
+                    FTC Photobooth <span className="text-white not-italic text-sm ml-2 font-normal">AI Powered v1.2</span>
                 </h1>
                 <div className="flex gap-2">
                     {['select', 'capture', 'result'].map((s, i) => (
-                        <div key={s} className={`h - 2 w - 8 rounded - full ${step === s || (step === 'processing' && s === 'result') ? 'bg-[#f97316]' : 'bg-white/20'} `} />
+                        <div key={s} className={`h-2 w-8 rounded-full ${step === s || (step === 'processing' && s === 'result') ? 'bg-[#f97316]' : 'bg-white/20'} `} />
                     ))}
                 </div>
             </div>
