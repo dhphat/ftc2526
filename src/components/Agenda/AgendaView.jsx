@@ -134,7 +134,7 @@ const AgendaView = () => {
                                                 {i18n.language === 'en' ? event.title : event.titleVi}
                                             </h3>
                                             {isCurrent && (
-                                                <span className="text-[10px] bg-white text-black px-2 py-0.5 border-2 border-black font-black animate-pulse shadow-[2px_2px_0px_0px_black]">LIVE</span>
+                                                <span className="text-[10px] bg-[#f97316] text-white px-2 py-0.5 border-2 border-black font-black animate-pulse shadow-[2px_2px_0px_0px_black]">LIVE</span>
                                             )}
                                         </div>
                                         <div className={clsx(

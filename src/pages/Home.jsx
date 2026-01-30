@@ -30,76 +30,24 @@ const Home = () => {
 
     return (
         <div className="h-full flex flex-col items-center py-12 gap-16 relative z-10 text-black">
-            {/* Hero Section - Decode style */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-4xl flex flex-col items-center"
-            >
-                {/* Branding Block */}
-                <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16 w-full justify-center">
-                    {/* Left Icon (Clock/Compass) */}
-                    <div className="w-48 h-48 md:w-64 md:h-64 border-4 border-black bg-white shadow-[8px_8px_0px_0px_black] flex items-center justify-center relative decode-border overflow-hidden">
-                        {settings.heroLogo ? (
-                            <img src={settings.heroLogo} alt="Hero Logo" className="w-full h-full object-contain p-4" />
-                        ) : (
-                            <div className="absolute inset-2 border-2 border-black flex items-center justify-center">
-                                <div className="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-black bg-[#f87171] relative overflow-hidden">
-                                    <div className="absolute top-1/2 left-1/2 w-1 h-20 md:h-24 bg-black origin-bottom -translate-x-1/2 -translate-y-full rotate-[15deg] transition-transform"></div>
-                                    <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-black rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Right Text */}
-                    <div className="text-center md:text-left space-y-4">
-                        {settings.heroTitleImage ? (
-                            <img src={settings.heroTitleImage} alt="DECODE" className="h-20 md:h-32 object-contain" />
-                        ) : (
-                            <h2 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-none">
-                                DecodE
-                            </h2>
-                        )}
-                        <p className="max-w-xs text-sm font-black font-mono uppercase tracking-widest pt-4">
-                            International robotics tournament for students from Vietnam and around the world
-                        </p>
-                    </div>
-                </div>
-
-                {/* Event Info */}
-                <div className="mt-12 w-full grid grid-cols-2 gap-4 border-t-4 border-black pt-8">
-                    <div className="text-center md:text-left">
-                        <p className="text-[10px] font-black uppercase text-gray-600">Vietnam Regional</p>
-                        <p className="font-black text-xl">JAN - FEB 2026</p>
-                    </div>
-                    <div className="text-center md:text-right">
-                        <p className="text-[10px] font-black uppercase text-gray-600">World Championship</p>
-                        <p className="font-black text-xl">APR - MAY 2026</p>
-                    </div>
-                </div>
-            </motion.div>
 
             {/* Navigation Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl px-4 order-1">
                 <GameButton to="/map" icon={Map} color="white" delay={0.1}>
                     {t('menu.map')}
                 </GameButton>
                 <GameButton to="/agenda" icon={Calendar} color="orange" delay={0.2}>
                     {t('menu.agenda')}
                 </GameButton>
-                {/* Links button removed as loops are shown below */}
-                <GameButton to="/admin" icon={Shield} color="purple" delay={0.4}>
-                    {t('menu.admin')}
-                </GameButton>
+                {/* Admin button hidden as requested */}
             </div>
 
             {/* Resources / Links Section */}
-            <div className="w-full max-w-5xl px-4 mt-12 space-y-8">
+            <div className="w-full max-w-5xl px-4 space-y-8 order-2">
                 <div className="border-b-4 border-black pb-4 text-center md:text-left">
                     <h3 className="text-3xl font-black uppercase text-black tracking-tighter italic">
                         <span className="bg-black text-[#6ee7b7] px-2 mr-2">Resource</span>
-                        Access
+                        {t('links.title')}
                     </h3>
                 </div>
 
@@ -127,6 +75,44 @@ const Home = () => {
                     )}
                 </div>
             </div>
+
+            {/* Hero Section - Moved to Bottom */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full max-w-4xl flex flex-col items-center order-3 mt-auto pt-12"
+            >
+                {/* Branding Block */}
+                <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16 w-full justify-center">
+                    {/* Left Icon (Clock/Compass) */}
+                    <div className="w-48 h-48 md:w-64 md:h-64 border-4 border-black bg-white shadow-[8px_8px_0px_0px_black] flex items-center justify-center relative decode-border overflow-hidden">
+                        {settings.heroLogo ? (
+                            <img src={settings.heroLogo} alt="Hero Logo" className="w-full h-full object-contain p-4" />
+                        ) : (
+                            <div className="absolute inset-2 border-2 border-black flex items-center justify-center">
+                                <div className="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-black bg-[#f87171] relative overflow-hidden">
+                                    <div className="absolute top-1/2 left-1/2 w-1 h-20 md:h-24 bg-black origin-bottom -translate-x-1/2 -translate-y-full rotate-[15deg] transition-transform"></div>
+                                    <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-black rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right Text */}
+                    <div className="text-center md:text-left space-y-4">
+                        {settings.heroTitleImage ? (
+                            <img src={settings.heroTitleImage} alt="DECODE" className="h-20 md:h-32 object-contain" />
+                        ) : (
+                            <h2 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-none">
+                                DecodE
+                            </h2>
+                        )}
+                        <p className="max-w-xs text-sm font-black font-mono uppercase tracking-widest pt-4">
+                            {t('home.description')}
+                        </p>
+                    </div>
+                </div>
+            </motion.div>
         </div>
     );
 };

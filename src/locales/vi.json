@@ -16,6 +16,9 @@
         "upcoming": "Sắp diễn ra"
     },
     "links": {
-        "title": "Tài nguyên"
+        "title": "Tài nguyên truy cập"
+    },
+    "home": {
+        "description": "Giải đấu robot quốc tế dành cho học sinh đến từ Việt Nam và khắp thế giới."
     }
 }
