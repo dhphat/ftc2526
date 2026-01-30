@@ -15,6 +15,15 @@ const Layout = ({ children }) => {
         const fetchSettings = async () => {
             const data = await getSettings();
             setSettings(data);
+
+            // Dynamic Favicon Update
+            if (data.favicon) {
+                const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+                link.type = 'image/x-icon';
+                link.rel = 'icon';
+                link.href = data.favicon;
+                document.getElementsByTagName('head')[0].appendChild(link);
+            }
         };
         fetchSettings();
     }, []);
