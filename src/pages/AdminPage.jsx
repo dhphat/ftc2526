@@ -1,96 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLinks, addLink, deleteLink, updateLink } from '../components/Links/linkManager';
-import { getPrompts, updatePrompt } from '../components/PhotoBooth/PromptManager';
 import { getSettings, updateSettings } from '../components/Settings/settingsManager';
 import { uploadImage } from '../components/Settings/uploadManager';
 import { motion } from 'framer-motion';
 import { Plus, Trash, Lock, Settings, LogOut, UploadCloud, Image as ImageIcon, Camera, Edit2, Save, X } from 'lucide-react';
 
-const PromptManagerView = () => {
-    const [prompts, setPrompts] = useState([]);
-    const [editingPrompt, setEditingPrompt] = useState(null);
-    const [uploading, setUploading] = useState(false);
 
-    useEffect(() => {
-        loadPrompts();
-    }, []);
-
-    const loadPrompts = async () => {
-        const data = await getPrompts();
-        setPrompts(data);
-    };
-
-    const handleSavePrompt = async (id, newPromptText) => {
-        await updatePrompt(id, { prompt: newPromptText });
-        setEditingPrompt(null);
-        loadPrompts();
-    };
-
-    const handleUploadSample = async (file, id) => {
-        if (!file) return;
-        setUploading(true);
-        try {
-            const url = await uploadImage(file, `prompts/${id}`);
-            await updatePrompt(id, { sampleImage: url });
-            loadPrompts();
-        } catch (error) {
-            alert("Upload failed");
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    return (
-        <>
-            {prompts.map(prompt => (
-                <div key={prompt.id} className="bg-white border-4 border-black p-4 space-y-4">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <h4 className="font-black text-lg uppercase italic">{prompt.name}</h4>
-                            <p className="text-xs font-mono text-black/60">{prompt.description}</p>
-                        </div>
-                        {editingPrompt === prompt.id ? (
-                            <div className="flex gap-2">
-                                <button onClick={() => setEditingPrompt(null)} className="p-1 hover:text-red-600"><X size={16} /></button>
-                            </div>
-                        ) : (
-                            <button onClick={() => setEditingPrompt(prompt.id)} className="p-1 hover:text-blue-600"><Edit2 size={16} /></button>
-                        )}
-                    </div>
-
-                    {/* Sample Image Upload */}
-                    <div className="relative group cursor-pointer border-2 border-black border-dashed bg-gray-50 h-32 flex items-center justify-center overflow-hidden">
-                        {prompt.sampleImage ? (
-                            <img src={prompt.sampleImage} alt="Sample" className="w-full h-full object-cover" />
-                        ) : (
-                            <span className="text-xs font-black text-black/20 uppercase text-center p-2">Upload Sample Result<br />(4:5 Ratio)</span>
-                        )}
-                        <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => handleUploadSample(e.target.files[0], prompt.id)} disabled={uploading} />
-                        <div className="absolute bottom-1 right-1 bg-black text-white p-1 pointer-events-none"><UploadCloud size={12} /></div>
-                    </div>
-
-                    {/* Prompt Editor */}
-                    <div className="relative">
-                        <textarea
-                            className={`w-full h-32 p-2 font-mono text-xs border-2 border-black bg-black/5 resize-none focus:outline-none ${editingPrompt === prompt.id ? 'bg-white' : 'opacity-50 pointer-events-none'}`}
-                            defaultValue={prompt.prompt}
-                            id={`prompt-text-${prompt.id}`}
-                        />
-                        {editingPrompt === prompt.id && (
-                            <button
-                                onClick={() => handleSavePrompt(prompt.id, document.getElementById(`prompt-text-${prompt.id}`).value)}
-                                className="absolute bottom-2 right-2 bg-black text-[#f97316] text-xs font-black px-2 py-1 uppercase flex items-center gap-1 hover:bg-[#f97316] hover:text-black transition-colors"
-                            >
-                                <Save size={12} /> Save
-                            </button>
-                        )}
-                    </div>
-                </div>
-            ))}
-        </>
-    );
-};
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 
@@ -316,15 +232,7 @@ const AdminPage = () => {
                 </form>
             </div>
 
-            {/* Photo Prompt Manager Section */}
-            <div className="space-y-6">
-                <h3 className="text-2xl font-black text-black uppercase tracking-tighter flex items-center gap-3 italic">
-                    <Camera className="stroke-black stroke-[3]" /> Photo Prompt Manager
-                </h3>
-                <div className="border-4 border-black p-8 bg-[#f97316]/10 shadow-[8px_8px_0px_0px_black] grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <PromptManagerView />
-                </div>
-            </div>
+
 
             <div className="grid md:grid-cols-2 gap-12">
                 {/* Add/Edit Form */}
