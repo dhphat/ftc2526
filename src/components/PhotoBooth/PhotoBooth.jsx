@@ -266,14 +266,22 @@ const PhotoBooth = () => {
                         {/* Final Image Container - Ref for html2canvas */}
                         <div ref={resultRef} className="relative w-full max-w-md aspect-[4/5] bg-black overflow-hidden border-8 border-black shadow-2xl">
                             {/* Base Image (Captured) */}
-                            <img src={imgSrc} alt="Result" className="w-full h-full object-cover mix-blend-overlay opacity-80" crossOrigin="anonymous" />
+                            <img
+                                src={imgSrc}
+                                alt="Result"
+                                className="w-full h-full object-cover mix-blend-overlay opacity-80"
+                            />
 
                             {/* Overlay Effect based on prompt (Simulation) */}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#f97316]/40 to-transparent mix-blend-color-dodge pointer-events-none"></div>
 
                             {/* User uploaded prompt Image overlay if available (Simulation of style transfer) */}
                             {selectedPrompt?.sampleImage && (
-                                <img src={selectedPrompt.sampleImage} className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen pointer-events-none" crossOrigin="anonymous" />
+                                <img
+                                    src={selectedPrompt.sampleImage}
+                                    className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen pointer-events-none"
+                                    onError={(e) => e.currentTarget.style.display = 'none'}
+                                />
                             )}
 
                             {/* QR Overlay */}
