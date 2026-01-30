@@ -4,7 +4,8 @@ import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 const COLLECTION_NAME = 'photoPrompts';
 
 // Initial prompts based on user request
-const DEFAULT_PROMPTS = [
+// Initial prompts based on user request
+export const DEFAULT_PROMPTS = [
     {
         id: 'style_1',
         name: 'Futuristic Archaeologist',

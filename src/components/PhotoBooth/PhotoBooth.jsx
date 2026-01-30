@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { QRCodeSVG } from 'qrcode.react';
 import { Camera, RefreshCw, Smartphone, Upload, CheckCircle, Download } from 'lucide-react';
-import { getPrompts } from './PromptManager';
+import { getPrompts, DEFAULT_PROMPTS } from './PromptManager';
 import { uploadImage } from '../Settings/uploadManager';
 import { motion, AnimatePresence } from 'framer-motion';
 import html2canvas from 'html2canvas';
@@ -35,7 +35,7 @@ const PromptCard = ({ prompt, selected, onClick }) => (
 
 const PhotoBooth = () => {
     const [step, setStep] = useState('select'); // select, capture, processing, result
-    const [prompts, setPrompts] = useState([]);
+    const [prompts, setPrompts] = useState(DEFAULT_PROMPTS);
     const [selectedPrompt, setSelectedPrompt] = useState(null);
     const [imgSrc, setImgSrc] = useState(null);
     const [finalImageURL, setFinalImageURL] = useState(null); // URL for QR Code
