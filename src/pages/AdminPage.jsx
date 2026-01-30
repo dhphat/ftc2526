@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getLinks, addLink, deleteLink } from '../components/Links/linkManager';
+import { getLinks, addLink, deleteLink, updateLink } from '../components/Links/linkManager';
 import { getSettings, updateSettings } from '../components/Settings/settingsManager';
 import { uploadImage } from '../components/Settings/uploadManager';
 import { motion } from 'framer-motion';
@@ -28,6 +28,7 @@ const AdminPage = () => {
     const [newName, setNewName] = useState('');
     const [newNameVi, setNewNameVi] = useState('');
     const [newUrl, setNewUrl] = useState('');
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -83,25 +84,49 @@ const AdminPage = () => {
         alert('Settings updated successfully!');
     };
 
-    const handleAdd = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!newName || !newNameVi || !newUrl) return;
 
-        const updatedLinks = await addLink({
+        const linkData = {
             name: newName,
             nameVi: newNameVi,
             url: newUrl
-        });
+        };
+
+        let updatedLinks;
+        if (editingId) {
+            updatedLinks = await updateLink(editingId, linkData);
+            setEditingId(null);
+        } else {
+            updatedLinks = await addLink(linkData);
+        }
+
         setLinks(updatedLinks);
         setNewName('');
         setNewNameVi('');
         setNewUrl('');
     };
 
+    const handleEdit = (link) => {
+        setNewName(link.name);
+        setNewNameVi(link.nameVi);
+        setNewUrl(link.url);
+        setEditingId(link.id);
+    };
+
+    const handleCancelEdit = () => {
+        setNewName('');
+        setNewNameVi('');
+        setNewUrl('');
+        setEditingId(null);
+    };
+
     const handleDelete = async (id) => {
         if (window.confirm('Delete this link?')) {
             const updatedLinks = await deleteLink(id);
             setLinks(updatedLinks);
+            if (editingId === id) handleCancelEdit();
         }
     };
 
@@ -206,12 +231,12 @@ const AdminPage = () => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-12">
-                {/* Add Form */}
+                {/* Add/Edit Form */}
                 <div className="space-y-6">
                     <h3 className="text-xl font-black text-black uppercase tracking-tighter flex items-center gap-2 italic">
-                        <span className="w-3 h-3 bg-black"></span> New Link
+                        <span className="w-3 h-3 bg-black"></span> {editingId ? 'Edit Link' : 'New Link'}
                     </h3>
-                    <form onSubmit={handleAdd} className="flex flex-col gap-5 border-4 border-black p-6 bg-[#f8fafc] shadow-[6px_6px_0px_0px_black]">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-5 border-4 border-black p-6 bg-[#f8fafc] shadow-[6px_6px_0px_0px_black]">
                         <div>
                             <label className="font-black text-xs text-black/40 font-mono uppercase">Name (English)</label>
                             <input
@@ -246,9 +271,17 @@ const AdminPage = () => {
                             />
                         </div>
 
-                        <button className="bg-black text-[#6ee7b7] p-4 font-black flex items-center justify-center gap-2 hover:bg-white hover:text-black border-4 border-black transition-all mt-2 uppercase font-mono shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">
-                            <Plus size={24} strokeWidth={3} /> Execute Add
-                        </button>
+                        <div className="flex gap-4">
+                            <button className="flex-1 bg-black text-[#6ee7b7] p-4 font-black flex items-center justify-center gap-2 hover:bg-white hover:text-black border-4 border-black transition-all mt-2 uppercase font-mono shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">
+                                <Plus size={24} strokeWidth={3} className={editingId ? "hidden" : "block"} />
+                                {editingId ? 'Update Link' : 'Execute Add'}
+                            </button>
+                            {editingId && (
+                                <button type="button" onClick={handleCancelEdit} className="flex-1 bg-gray-200 text-black p-4 font-black flex items-center justify-center gap-2 hover:bg-gray-300 border-4 border-black transition-all mt-2 uppercase font-mono shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
                     </form>
                 </div>
 
@@ -259,18 +292,26 @@ const AdminPage = () => {
                     </h3>
                     <div className="h-[450px] overflow-y-auto space-y-3 pr-2 border-4 border-black bg-black/5 p-4 custom-scrollbar">
                         {links.map(link => (
-                            <div key={link.id} className="flex items-center justify-between p-4 bg-white border-4 border-black shadow-[4px_4px_0px_0px_black] group">
+                            <div key={link.id} className={`flex items-center justify-between p-4 bg-white border-4 border-black shadow-[4px_4px_0px_0px_black] group ${editingId === link.id ? 'border-dashed border-blue-600 bg-blue-50' : ''}`}>
                                 <div className="overflow-hidden">
                                     <div className="font-black text-black uppercase italic tracking-tighter group-hover:bg-black group-hover:text-white px-2 -ml-2 transition-colors inline-block w-fit">{link.name}</div>
                                     <div className="text-xs text-black/40 font-black">{link.nameVi}</div>
                                     <div className="text-xs font-black font-mono text-blue-600 truncate max-w-[200px] opacity-70">{link.url}</div>
                                 </div>
-                                <button
-                                    onClick={() => handleDelete(link.id)}
-                                    className="p-2 border-2 border-transparent hover:border-red-600 text-black/30 hover:text-red-600 transition-all"
-                                >
-                                    <Trash size={20} />
-                                </button>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleEdit(link)}
+                                        className="p-2 border-2 border-transparent hover:border-black text-black/30 hover:text-black transition-all"
+                                    >
+                                        <Settings size={20} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(link.id)}
+                                        className="p-2 border-2 border-transparent hover:border-red-600 text-black/30 hover:text-red-600 transition-all"
+                                    >
+                                        <Trash size={20} />
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>

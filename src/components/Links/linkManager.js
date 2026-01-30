@@ -1,5 +1,5 @@
 import { db } from '../../firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 
 const COLLECTION_NAME = 'links';
 
@@ -19,6 +19,17 @@ export const addLink = async (link) => {
         return await getLinks(); // Return updated list
     } catch (error) {
         console.error("Error adding link:", error);
+        return [];
+    }
+};
+
+export const updateLink = async (id, updatedData) => {
+    try {
+        const docRef = doc(db, COLLECTION_NAME, id);
+        await updateDoc(docRef, updatedData);
+        return await getLinks();
+    } catch (error) {
+        console.error("Error updating link:", error);
         return [];
     }
 };
