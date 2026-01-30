@@ -1,4 +1,4 @@
-```javascript
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { QRCodeSVG } from 'qrcode.react';
@@ -13,7 +13,7 @@ const PromptCard = ({ prompt, selected, onClick }) => (
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => onClick(prompt)}
-        className={`relative cursor - pointer rounded - xl overflow - hidden aspect - [4 / 5] border - 4 transition - all ${ selected ? 'border-[#f97316] shadow-[0_0_20px_rgba(249,115,22,0.6)]' : 'border-black opacity-80 hover:opacity-100' } `}
+        className={`relative cursor - pointer rounded - xl overflow - hidden aspect - [4 / 5] border - 4 transition - all ${selected ? 'border-[#f97316] shadow-[0_0_20px_rgba(249,115,22,0.6)]' : 'border-black opacity-80 hover:opacity-100'} `}
     >
         {prompt.sampleImage ? (
             <img src={prompt.sampleImage} alt={prompt.name} className="w-full h-full object-cover" />
@@ -65,7 +65,7 @@ const PhotoBooth = () => {
             // Upload to Firebase to get a shareable URL for QR Code
             const url = await uploadImage(file, 'generated_photos');
             setFinalImageURL(url);
-            
+
             // Artificial delay for "AI Processing" feeling
             setTimeout(() => setStep('result'), 2000);
         } catch (error) {
@@ -110,7 +110,7 @@ const PhotoBooth = () => {
             try {
                 const canvas = await html2canvas(resultRef.current, { useCORS: true, scale: 2 });
                 const link = document.createElement('a');
-                link.download = `FTC_Artifact_${ Date.now() }.png`;
+                link.download = `FTC_Artifact_${Date.now()}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (err) {
@@ -144,7 +144,7 @@ const PhotoBooth = () => {
                 </h1>
                 <div className="flex gap-2">
                     {['select', 'capture', 'result'].map((s, i) => (
-                        <div key={s} className={`h - 2 w - 8 rounded - full ${ step === s || (step === 'processing' && s === 'result') ? 'bg-[#f97316]' : 'bg-white/20' } `} />
+                        <div key={s} className={`h - 2 w - 8 rounded - full ${step === s || (step === 'processing' && s === 'result') ? 'bg-[#f97316]' : 'bg-white/20'} `} />
                     ))}
                 </div>
             </div>
@@ -221,7 +221,7 @@ const PhotoBooth = () => {
                         </div>
 
                         <button onClick={() => setStep('select')} className="absolute top-4 left-4 text-white/50 hover:text-white flex items-center gap-2 z-40 bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
-                             &lt; Back
+                            &lt; Back
                         </button>
                     </motion.div>
                 )}
@@ -232,7 +232,7 @@ const PhotoBooth = () => {
                         <div className="w-24 h-24 border-8 border-white/10 border-t-[#f97316] rounded-full animate-spin mx-auto"></div>
                         <h2 className="text-2xl font-black uppercase tracking-tighter animate-pulse">Generating Artifact...</h2>
                         <p className="text-white/50 font-mono text-sm max-w-md mx-auto">
-                            Applying style: <br/>
+                            Applying style: <br />
                             <span className="text-[#f97316]">{selectedPrompt?.name}</span>
                         </p>
                     </div>
@@ -243,27 +243,27 @@ const PhotoBooth = () => {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row gap-8 items-center bg-white text-black p-4 md:p-8 rounded-xl max-w-5xl">
                         {/* Final Image Container - Ref for html2canvas */}
                         <div ref={resultRef} className="relative w-full max-w-md aspect-[4/5] bg-black overflow-hidden border-8 border-black shadow-2xl">
-                             {/* Base Image (Captured) */}
-                             <img src={imgSrc} alt="Result" className="w-full h-full object-cover mix-blend-overlay opacity-80" crossOrigin="anonymous" />
-                             
-                             {/* Overlay Effect based on prompt (Simulation) */}
-                             <div className="absolute inset-0 bg-gradient-to-t from-[#f97316]/40 to-transparent mix-blend-color-dodge pointer-events-none"></div>
-                             
-                             {/* User uploaded prompt Image overlay if available (Simulation of style transfer) */}
-                             {selectedPrompt?.sampleImage && (
+                            {/* Base Image (Captured) */}
+                            <img src={imgSrc} alt="Result" className="w-full h-full object-cover mix-blend-overlay opacity-80" crossOrigin="anonymous" />
+
+                            {/* Overlay Effect based on prompt (Simulation) */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#f97316]/40 to-transparent mix-blend-color-dodge pointer-events-none"></div>
+
+                            {/* User uploaded prompt Image overlay if available (Simulation of style transfer) */}
+                            {selectedPrompt?.sampleImage && (
                                 <img src={selectedPrompt.sampleImage} className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen pointer-events-none" crossOrigin="anonymous" />
-                             )}
+                            )}
 
-                             {/* QR Overlay */}
-                             {finalImageURL && (
-                                 <div className="absolute top-4 right-4 bg-white p-2 border-2 border-black z-10">
+                            {/* QR Overlay */}
+                            {finalImageURL && (
+                                <div className="absolute top-4 right-4 bg-white p-2 border-2 border-black z-10">
                                     <QRCodeSVG value={finalImageURL} size={64} />
-                                 </div>
-                             )}
+                                </div>
+                            )}
 
-                             <div className="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
+                            <div className="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
                                 <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter drop-shadow-[4px_4px_0px_black]">{selectedPrompt?.name}</h2>
-                             </div>
+                            </div>
                         </div>
 
                         {/* Controls */}
