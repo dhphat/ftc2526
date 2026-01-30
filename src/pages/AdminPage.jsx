@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLinks, addLink, deleteLink } from '../components/Links/linkManager';
 import { getSettings, updateSettings } from '../components/Settings/settingsManager';
+import { uploadImage } from '../components/Settings/uploadManager';
 import { motion } from 'framer-motion';
-import { Plus, Trash, Lock, Settings, LogOut } from 'lucide-react';
+import { Plus, Trash, Lock, Settings, LogOut, UploadCloud, Image as ImageIcon } from 'lucide-react';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 
@@ -13,12 +14,14 @@ const AdminPage = () => {
     const [settings, setSettings] = useState({
         siteLogo: '',
         heroLogo: '',
-        heroTitleImage: ''
+        heroTitleImage: '',
+        favicon: ''
     });
     const [user, setUser] = useState(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
 
     // Form State
@@ -58,6 +61,20 @@ const AdminPage = () => {
 
     const handleLogout = async () => {
         await signOut(auth);
+    };
+
+    const handleImageUpload = async (file, key) => {
+        if (!file) return;
+        setUploading(true);
+        try {
+            // Path: settings/{key}
+            const url = await uploadImage(file, 'settings');
+            setSettings(prev => ({ ...prev, [key]: url }));
+        } catch (error) {
+            alert("Upload failed. Please try again.");
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleUpdateSettings = async (e) => {
@@ -145,42 +162,43 @@ const AdminPage = () => {
                 <h3 className="text-2xl font-black text-black uppercase tracking-tighter flex items-center gap-3 italic">
                     <Settings className="stroke-black stroke-[3]" /> Branding Customization
                 </h3>
-                <form onSubmit={handleUpdateSettings} className="grid grid-cols-1 md:grid-cols-3 gap-8 border-4 border-black p-8 bg-[#6ee7b7]/10 shadow-[8px_8px_0px_0px_black]">
-                    <div className="space-y-4">
-                        <label className="block font-black text-xs text-black uppercase font-mono border-b-2 border-black pb-1">Header site logo (URL)</label>
-                        <input
-                            className="w-full p-3 bg-white border-4 border-black text-black font-black focus:outline-none focus:bg-[#6ee7b7]/5 transition-colors"
-                            value={settings.siteLogo || ''}
-                            onChange={e => setSettings({ ...settings, siteLogo: e.target.value })}
-                            placeholder="https://example.com/logo.png"
-                        />
-                        {settings.siteLogo && <img src={settings.siteLogo} alt="Preview" className="h-10 object-contain border-2 border-black bg-white" />}
-                    </div>
+                <form onSubmit={handleUpdateSettings} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 border-4 border-black p-8 bg-[#6ee7b7]/10 shadow-[8px_8px_0px_0px_black]">
 
-                    <div className="space-y-4">
-                        <label className="block font-black text-xs text-black uppercase font-mono border-b-2 border-black pb-1">Hero icon logo (URL)</label>
-                        <input
-                            className="w-full p-3 bg-white border-4 border-black text-black font-black focus:outline-none focus:bg-[#6ee7b7]/5 transition-colors"
-                            value={settings.heroLogo || ''}
-                            onChange={e => setSettings({ ...settings, heroLogo: e.target.value })}
-                            placeholder="https://example.com/hero-icon.png"
-                        />
-                        {settings.heroLogo && <img src={settings.heroLogo} alt="Preview" className="h-20 w-20 object-contain border-2 border-black mx-auto bg-white" />}
-                    </div>
+                    {/* Helper Component for File Upload */}
+                    {[
+                        { key: 'siteLogo', label: 'Header Logo', hClass: 'h-10' },
+                        { key: 'heroLogo', label: 'Hero Icon', hClass: 'h-20' },
+                        { key: 'heroTitleImage', label: 'Hero "DECODE"', hClass: 'h-16' },
+                        { key: 'favicon', label: 'Browser Favicon', hClass: 'h-10 w-10 rounded-full' }
+                    ].map(({ key, label, hClass }) => (
+                        <div key={key} className="space-y-4">
+                            <label className="block font-black text-xs text-black uppercase font-mono border-b-2 border-black pb-1">{label}</label>
 
-                    <div className="space-y-4">
-                        <label className="block font-black text-xs text-black uppercase font-mono border-b-2 border-black pb-1">Hero title image (URL)</label>
-                        <input
-                            className="w-full p-3 bg-white border-4 border-black text-black font-black focus:outline-none focus:bg-[#6ee7b7]/5 transition-colors"
-                            value={settings.heroTitleImage || ''}
-                            onChange={e => setSettings({ ...settings, heroTitleImage: e.target.value })}
-                            placeholder="https://example.com/hero-title.png"
-                        />
-                        {settings.heroTitleImage && <img src={settings.heroTitleImage} alt="Preview" className="h-16 object-contain border-2 border-black bg-white" />}
-                    </div>
+                            <div className="relative group cursor-pointer border-4 border-black bg-white hover:bg-black/5 transition-colors p-4 flex flex-col items-center justify-center min-h-[150px]">
+                                {settings[key] ? (
+                                    <img src={settings[key]} alt="Preview" className={`${hClass} object-contain mb-4`} />
+                                ) : (
+                                    <ImageIcon className="text-black/20 mb-4" size={48} />
+                                )}
 
-                    <div className="md:col-span-3 flex justify-end">
-                        <button className="bg-black text-[#6ee7b7] px-8 py-3 font-black flex items-center justify-center gap-2 hover:bg-white hover:text-black border-4 border-black transition-all uppercase font-mono shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e.target.files[0], key)}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    disabled={uploading}
+                                />
+
+                                <div className="absolute bottom-2 right-2 p-2 bg-black text-white pointer-events-none">
+                                    <UploadCloud size={16} />
+                                </div>
+                            </div>
+                            {uploading && <div className="text-xs font-mono font-black text-blue-600 animate-pulse text-center">UPLOADING...</div>}
+                        </div>
+                    ))}
+
+                    <div className="md:col-span-2 lg:col-span-4 flex justify-end">
+                        <button disabled={uploading} className="bg-black text-[#6ee7b7] px-8 py-3 font-black flex items-center justify-center gap-2 hover:bg-white hover:text-black border-4 border-black transition-all uppercase font-mono shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50">
                             Save Branding Config
                         </button>
                     </div>
