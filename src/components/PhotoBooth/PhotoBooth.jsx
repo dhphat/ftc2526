@@ -67,14 +67,20 @@ const PhotoBooth = () => {
             const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
 
             // Upload to Firebase to get a shareable URL for QR Code
-            const url = await uploadImage(file, 'generated_photos');
-            setFinalImageURL(url);
+            try {
+                const url = await uploadImage(file, 'generated_photos');
+                setFinalImageURL(url);
+            } catch (uploadError) {
+                console.error("Upload failed (expected if rules deny public writes):", uploadError);
+                // Fallback: If upload fails, just don't show QR or show fallback msg
+                // We still want to show the specific result so user can download locally
+            }
 
             // Artificial delay for "AI Processing" feeling
             setTimeout(() => setStep('result'), 2000);
         } catch (error) {
             console.error("Error processing image:", error);
-            alert("Failed to generate image. Please try again.");
+            alert("Failed to process local image. Please try again.");
             setStep('select');
         }
     };
