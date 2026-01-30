@@ -7,7 +7,7 @@ import { Clock } from 'lucide-react';
 
 const AgendaView = () => {
     const { t, i18n } = useTranslation();
-    const [selectedDay, setSelectedDay] = useState('2026-01-30');
+    const [selectedDay, setSelectedDay] = useState(agendaData?.[0]?.day || '');
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {

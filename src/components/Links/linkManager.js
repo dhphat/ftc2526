@@ -5,15 +5,11 @@ const COLLECTION_NAME = 'links';
 
 export const getLinks = async () => {
     try {
-        const q = query(collection(db, COLLECTION_NAME), orderBy('order', 'asc'));
-        const querySnapshot = await getDocs(q);
-
-        // If no documents have 'order' field, they might not show up or be sorted weirdly.
-        // For legacy data, we might need a fallback.
+        const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
         const links = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
-        // Final fallback sort for items without order or same order
-        return links.sort((a, b) => (a.order || 0) - (b.order || 0));
+        // Sort in memory: items with 'order' first, then fallback to original order
+        return links.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
     } catch (error) {
         console.error("Error getting links:", error);
         return [];
