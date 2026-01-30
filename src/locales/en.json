@@ -1,0 +1,21 @@
+{
+    "title": "FIRST Tech Challenge Vietnam",
+    "menu": {
+        "map": "Event Map",
+        "agenda": "Agenda",
+        "links": "Important Links",
+        "admin": "Admin"
+    },
+    "map": {
+        "title": "Area Map",
+        "instruction": "Click on an area to see details"
+    },
+    "agenda": {
+        "title": "Schedule",
+        "now": "Now",
+        "upcoming": "Upcoming"
+    },
+    "links": {
+        "title": "Resources"
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "title": "FIRST Tech Challenge Vietnam",
+    "menu": {
+        "map": "Bản đồ khu vực",
+        "agenda": "Lịch trình",
+        "links": "Liên kết",
+        "admin": "Quản trị"
+    },
+    "map": {
+        "title": "Bản đồ khu vực",
+        "instruction": "Bấm vào khu vực để xem chi tiết"
+    },
+    "agenda": {
+        "title": "Lịch trình",
+        "now": "Đang diễn ra",
+        "upcoming": "Sắp diễn ra"
+    },
+    "links": {
+        "title": "Tài nguyên"
+    }
+}
