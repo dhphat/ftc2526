@@ -138,7 +138,14 @@ const DEFAULT_PROMPTS = [
 
 export const getPrompts = async () => {
     try {
-        const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+        // Create a timeout promise that rejects after 2000ms
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000));
+
+        // Race the database fetch against the timeout
+        const querySnapshot = await Promise.race([
+            getDocs(collection(db, COLLECTION_NAME)),
+            timeout
+        ]);
 
         // If snapshot is empty, return default prompts immediately (don't force write in client constantly or it's slow)
         // If initialized properly in a real app, we'd write once. Here we just fallback.
@@ -150,7 +157,7 @@ export const getPrompts = async () => {
         const fetchedPrompts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => a.id.localeCompare(b.id));
         return fetchedPrompts.length > 0 ? fetchedPrompts : DEFAULT_PROMPTS;
     } catch (error) {
-        console.error("Error getting prompts:", error);
+        console.error("Error getting prompts (or timeout):", error);
         return DEFAULT_PROMPTS;
     }
 };
