@@ -8,6 +8,7 @@ const defaultSettings = {
     siteLogo: '',
     heroLogo: '',
     heroTitleImage: '',
+    favicon: '',
 };
 
 export const getSettings = async () => {
