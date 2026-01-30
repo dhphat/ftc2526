@@ -1,33 +1,4 @@
 export const agendaData = [
-    // Friday, Jan 30
-    {
-        id: 'fri-1',
-        day: '2026-01-30',
-        start: '07:30',
-        end: '13:30',
-        title: 'Open Practice Fields',
-        titleVi: 'Mở sân tập',
-        type: 'practice'
-    },
-    {
-        id: 'fri-2',
-        day: '2026-01-30',
-        start: '13:30',
-        end: '15:30',
-        title: 'Team Check-in / Open Pit',
-        titleVi: 'Check-in đội thi / Mở khu vực Pit',
-        type: 'admin'
-    },
-    {
-        id: 'fri-3',
-        day: '2026-01-30',
-        start: '15:30',
-        end: '20:00',
-        title: 'Robot Inspection / Field Inspection',
-        titleVi: 'Kiểm tra Robot / Kiểm tra sân',
-        type: 'tech'
-    },
-
     // Saturday, Jan 31
     {
         id: 'sat-1',

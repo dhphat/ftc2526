@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getLinks, addLink, deleteLink, updateLink } from '../components/Links/linkManager';
+import { getLinks, addLink, deleteLink, updateLink, updateLinksOrder } from '../components/Links/linkManager';
 import { getSettings, updateSettings } from '../components/Settings/settingsManager';
 import { uploadImage } from '../components/Settings/uploadManager';
-import { motion } from 'framer-motion';
-import { Plus, Trash, Lock, Settings, LogOut, UploadCloud, Image as ImageIcon, Camera, Edit2, Save, X } from 'lucide-react';
+import { motion, Reorder } from 'framer-motion';
+import { Plus, Trash, Lock, Settings, LogOut, UploadCloud, Image as ImageIcon, Camera, Edit2, Save, X, GripVertical } from 'lucide-react';
 
 
 import { auth } from '../firebase';
@@ -130,6 +130,11 @@ const AdminPage = () => {
             setLinks(updatedLinks);
             if (editingId === id) handleCancelEdit();
         }
+    };
+
+    const handleReorder = async (newOrder) => {
+        setLinks(newOrder);
+        await updateLinksOrder(newOrder);
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-black">Loading Admin Panel...</div>;
@@ -294,13 +299,27 @@ const AdminPage = () => {
                     <h3 className="text-xl font-black text-black uppercase tracking-tighter flex items-center gap-2 italic">
                         <span className="w-3 h-3 bg-blue-600"></span> Database
                     </h3>
-                    <div className="h-[450px] overflow-y-auto space-y-3 pr-2 border-4 border-black bg-black/5 p-4 custom-scrollbar">
+                    <Reorder.Group
+                        axis="y"
+                        values={links}
+                        onReorder={handleReorder}
+                        className="h-[450px] overflow-y-auto space-y-3 pr-2 border-4 border-black bg-black/5 p-4 custom-scrollbar"
+                    >
                         {links.map(link => (
-                            <div key={link.id} className={`flex items-center justify-between p-4 bg-white border-4 border-black shadow-[4px_4px_0px_0px_black] group ${editingId === link.id ? 'border-dashed border-blue-600 bg-blue-50' : ''}`}>
-                                <div className="overflow-hidden">
-                                    <div className="font-black text-black uppercase italic tracking-tighter group-hover:bg-black group-hover:text-white px-2 -ml-2 transition-colors inline-block w-fit">{link.name}</div>
-                                    <div className="text-xs text-black/40 font-black">{link.nameVi}</div>
-                                    <div className="text-xs font-black font-mono text-blue-600 truncate max-w-[200px] opacity-70">{link.url}</div>
+                            <Reorder.Item
+                                key={link.id}
+                                value={link}
+                                className={`flex items-center justify-between p-4 bg-white border-4 border-black shadow-[4px_4px_0px_0px_black] group ${editingId === link.id ? 'border-dashed border-blue-600 bg-blue-50' : ''}`}
+                            >
+                                <div className="flex items-center gap-4 overflow-hidden">
+                                    <div className="cursor-grab active:cursor-grabbing text-black/20 hover:text-black transition-colors">
+                                        <GripVertical size={20} />
+                                    </div>
+                                    <div className="overflow-hidden">
+                                        <div className="font-black text-black uppercase italic tracking-tighter group-hover:bg-black group-hover:text-white px-2 -ml-2 transition-colors inline-block w-fit">{link.name}</div>
+                                        <div className="text-xs text-black/40 font-black">{link.nameVi}</div>
+                                        <div className="text-xs font-black font-mono text-blue-600 truncate max-w-[200px] opacity-70">{link.url}</div>
+                                    </div>
                                 </div>
                                 <div className="flex gap-2">
                                     <button
@@ -316,9 +335,9 @@ const AdminPage = () => {
                                         <Trash size={20} />
                                     </button>
                                 </div>
-                            </div>
+                            </Reorder.Item>
                         ))}
-                    </div>
+                    </Reorder.Group>
                 </div>
             </div>
         </div>

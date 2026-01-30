@@ -10,7 +10,11 @@ const LinksPage = () => {
     const [links, setLinks] = useState([]);
 
     useEffect(() => {
-        setLinks(getLinks());
+        const fetchLinks = async () => {
+            const data = await getLinks();
+            setLinks(data);
+        };
+        fetchLinks();
     }, []);
 
     return (
