@@ -1,30 +1,34 @@
-const STORAGE_KEY = 'ftc_links';
+import { db } from '../../firebase';
+import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 
-const defaultLinks = [
-    { id: '1', name: 'Official Website', nameVi: 'Trang chủ chính thức', url: 'https://ftc.vn' },
-    { id: '2', name: 'Rule Manual 1', nameVi: 'Sổ tay luật 1', url: '#' },
-    { id: '3', name: 'Rule Manual 2', nameVi: 'Sổ tay luật 2', url: '#' }
-];
+const COLLECTION_NAME = 'links';
 
-export const getLinks = () => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultLinks));
-        return defaultLinks;
+export const getLinks = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+        return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    } catch (error) {
+        console.error("Error getting links:", error);
+        return [];
     }
-    return JSON.parse(stored);
 };
 
-export const addLink = (link) => {
-    const links = getLinks();
-    const newLinks = [...links, { ...link, id: Date.now().toString() }];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newLinks));
-    return newLinks;
+export const addLink = async (link) => {
+    try {
+        await addDoc(collection(db, COLLECTION_NAME), link);
+        return await getLinks(); // Return updated list
+    } catch (error) {
+        console.error("Error adding link:", error);
+        return [];
+    }
 };
 
-export const deleteLink = (id) => {
-    const links = getLinks();
-    const newLinks = links.filter(l => l.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newLinks));
-    return newLinks;
+export const deleteLink = async (id) => {
+    try {
+        await deleteDoc(doc(db, COLLECTION_NAME, id));
+        return await getLinks(); // Return updated list
+    } catch (error) {
+        console.error("Error deleting link:", error);
+        return [];
+    }
 };

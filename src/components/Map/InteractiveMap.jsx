@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import mapImage from '../../assets/map.png'; // Make sure path is correct relative to this file
+import mapImage from '../../assets/Mapkhuvuc1 (1).jpg';
 import { mapAreas } from './mapData';
 import clsx from 'clsx';
 import { Info, X } from 'lucide-react';
@@ -15,81 +15,101 @@ const InteractiveMap = () => {
         setSelectedArea(area);
     };
 
+    // Group areas by category - Memoized for performance
+    const categories = useMemo(() => ['PIT AREA', 'EVENT TENT', 'OTHERS', 'PARKING'], []);
+    const groupedAreas = useMemo(() => {
+        return categories.reduce((acc, cat) => {
+            acc[cat] = mapAreas.filter(area => area.category === cat);
+            return acc;
+        }, {});
+    }, [categories]);
+
     return (
-        <div className="flex flex-col md:flex-row gap-4 h-[full] min-h-[600px] relative">
-            {/* Map Container - HUD Style */}
-            <div className="flex-1 bg-gray-900 border border-ftc-green/30 relative overflow-hidden rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.5)] group">
-                {/* HUD Corners */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-ftc-green z-10"></div>
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-ftc-green z-10"></div>
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-ftc-green z-10"></div>
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-ftc-green z-10"></div>
-
-                {/* HUD Grid Overlay */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(110,231,183,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(110,231,183,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none z-0"></div>
-
+        <div className="flex flex-col lg:flex-row gap-8 h-full min-h-[700px] relative text-black">
+            {/* Map Container - Flat Retro Style */}
+            <div className="flex-1 bg-white border-4 border-black relative overflow-hidden shadow-[8px_8px_0px_0px_black] group">
                 <TransformWrapper
                     initialScale={1}
                     minScale={0.5}
                     maxScale={4}
                     centerOnInit
                 >
-                    {({ zoomIn, zoomOut, resetTransform, setTransform }) => (
+                    {({ zoomIn, zoomOut, resetTransform }) => (
                         <>
                             {/* Controls */}
-                            <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-                                <button onClick={() => zoomIn()} className="w-10 h-10 bg-black/50 text-ftc-green font-bold border border-ftc-green hover:bg-ftc-green hover:text-black transition-all backdrop-blur">+</button>
-                                <button onClick={() => zoomOut()} className="w-10 h-10 bg-black/50 text-ftc-green font-bold border border-ftc-green hover:bg-ftc-green hover:text-black transition-all backdrop-blur">-</button>
-                                <button onClick={() => resetTransform()} className="w-10 h-10 bg-black/50 text-ftc-green font-bold border border-ftc-green hover:bg-ftc-green hover:text-black transition-all backdrop-blur">R</button>
+                            <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
+                                <button onClick={() => zoomIn()} className="w-12 h-12 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-2xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">+</button>
+                                <button onClick={() => zoomOut()} className="w-12 h-12 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-2xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">-</button>
+                                <button onClick={() => resetTransform()} className="w-12 h-12 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">R</button>
                             </div>
 
                             <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
-                                <div className="relative w-full h-full min-h-[600px] bg-gray-900/50">
-                                    <img
-                                        src={mapImage}
-                                        alt="Event Map"
-                                        className="w-full h-full object-contain pointer-events-none select-none opacity-90"
-                                    />
-
-                                    {/* Overlay Zones */}
-                                    {mapAreas.map((area) => (
-                                        <motion.div
-                                            key={area.id}
-                                            className={clsx(
-                                                "absolute cursor-pointer border-2 border-transparent hover:border-white transition-colors",
-                                                selectedArea?.id === area.id ? "bg-white/30 border-white shadow-[0_0_15px_rgba(255,255,255,0.8)]" : "bg-transparent"
-                                            )}
-                                            style={{
-                                                top: `${area.y}%`,
-                                                left: `${area.x}%`,
-                                                width: `${area.width}%`,
-                                                height: `${area.height}%`,
-                                                transform: area.rotation ? `rotate(${area.rotation}deg)` : 'none'
-                                            }}
-                                            whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // Prevent deselecting if map has click handler
-                                                handleAreaClick(area);
-                                            }}
+                                <div className="relative w-full h-full min-h-[700px] bg-white flex items-center justify-center p-4">
+                                    <div
+                                        className="relative w-full max-w-[1200px] aspect-[1.78]"
+                                        style={{ willChange: 'transform' }}
+                                    >
+                                        <img
+                                            src={mapImage}
+                                            alt="Event Area Map"
+                                            className="w-full h-full object-contain pointer-events-none select-none"
+                                            style={{ opacity: 1 }}
                                         />
-                                    ))}
 
-                                    {/* Pin Drop for Selected */}
-                                    {selectedArea && (
-                                        <motion.div
-                                            initial={{ y: -50, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            className="absolute z-10 pointer-events-none"
-                                            style={{
-                                                top: `${selectedArea.y - 10}%`,
-                                                left: `${selectedArea.x + selectedArea.width / 2}%`,
-                                                transform: 'translateX(-50%)'
-                                            }}
-                                        >
-                                            <div className="text-4xl">📍</div>
-                                        </motion.div>
-                                    )}
+                                        {/* Overlay Zones */}
+                                        {mapAreas.map((area) => {
+                                            const isSelected = selectedArea?.id === area.id;
+
+                                            // Handle multiple shapes or single shape
+                                            const shapes = area.shapes || [{
+                                                x: area.x,
+                                                y: area.y,
+                                                width: area.width,
+                                                height: area.height,
+                                                points: area.points,
+                                                rotation: area.rotation
+                                            }];
+
+                                            return (
+                                                <div key={area.id} className="absolute inset-0 pointer-events-none">
+                                                    {shapes.map((shape, idx) => {
+                                                        const clipPath = shape.points
+                                                            ? `polygon(${shape.points.map(p => `${p[0]}% ${p[1]}%`).join(', ')})`
+                                                            : 'none';
+
+                                                        return (
+                                                            <motion.div
+                                                                key={`${area.id}-${idx}`}
+                                                                initial={false}
+                                                                className={clsx(
+                                                                    "absolute cursor-pointer border-2 transition-all duration-200 pointer-events-auto",
+                                                                    isSelected ? "border-white z-10" : "border-transparent z-0 hover:border-white/50"
+                                                                )}
+                                                                style={{
+                                                                    top: `${shape.y}%`,
+                                                                    left: `${shape.x}%`,
+                                                                    width: `${shape.width}%`,
+                                                                    height: `${shape.height}%`,
+                                                                    transform: shape.rotation ? `rotate(${shape.rotation}deg)` : 'none',
+                                                                    clipPath,
+                                                                    backgroundColor: isSelected ? `${area.color}66` : 'transparent',
+                                                                    boxShadow: isSelected ? `0 0 20px ${area.color}88` : 'none',
+                                                                    willChange: 'background-color, border-color'
+                                                                }}
+                                                                whileHover={{
+                                                                    backgroundColor: isSelected ? `${area.color}88` : `${area.color}22`
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleAreaClick(area);
+                                                                }}
+                                                            />
+                                                        );
+                                                    })}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </TransformComponent>
                         </>
@@ -97,28 +117,42 @@ const InteractiveMap = () => {
                 </TransformWrapper>
             </div>
 
-            {/* Sidebar / Info Panel */}
-            <div className="w-full md:w-80 glass-panel p-4 flex flex-col h-auto md:h-auto rounded-lg border border-ftc-green/20">
-                <h3 className="text-xl font-bold mb-4 uppercase flex items-center gap-2 text-ftc-green tracking-widest border-b border-ftc-green/20 pb-2">
-                    <Info className="animate-pulse" />
+            {/* Sidebar / Grouped Legend */}
+            <div className="w-full lg:w-96 flat-panel p-6 flex flex-col h-auto overflow-hidden">
+                <h3 className="text-2xl font-black mb-6 uppercase flex items-center gap-3 text-black tracking-tighter border-b-4 border-black pb-3">
+                    <Info size={24} />
                     {t('map.title')}
                 </h3>
 
-                <div className="flex-1 overflow-y-auto space-y-2 mb-4 pr-1">
-                    {mapAreas.map(area => (
-                        <button
-                            key={area.id}
-                            onClick={() => setSelectedArea(area)}
-                            className={clsx(
-                                "w-full text-left p-3 border border-transparent font-mono transition-all text-sm uppercase relative overflow-hidden group",
-                                selectedArea?.id === area.id
-                                    ? "bg-ftc-green/20 text-ftc-green border-ftc-green/50 box-glow"
-                                    : "hover:bg-white/5 hover:border-gray-600 text-gray-400 hover:text-white"
-                            )}
-                        >
-                            <div className={clsx("absolute left-0 top-0 bottom-0 w-[2px] transition-all", selectedArea?.id === area.id ? "bg-ftc-green" : "bg-transparent group-hover:bg-gray-600")}></div>
-                            {i18n.language === 'en' ? area.name : area.nameVi}
-                        </button>
+                <div className="flex-1 overflow-y-auto space-y-6 mb-6 pr-2 custom-scrollbar">
+                    {categories.map(cat => (
+                        <div key={cat} className="space-y-2">
+                            <h4 className="text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase mb-3 pl-1 border-l-4 border-black">
+                                {cat}
+                            </h4>
+                            <div className="grid grid-cols-1 gap-2">
+                                {groupedAreas[cat].map(area => (
+                                    <button
+                                        key={area.id}
+                                        onClick={() => setSelectedArea(area)}
+                                        className={clsx(
+                                            "w-full text-left py-2.5 px-3 border-2 transition-all text-xs uppercase flex items-center gap-3 relative overflow-hidden group font-black font-mono",
+                                            selectedArea?.id === area.id
+                                                ? "bg-black text-white border-black"
+                                                : "bg-white border-black hover:bg-black/5 text-black"
+                                        )}
+                                    >
+                                        <div
+                                            className="w-3 h-3 rounded-none flex-shrink-0 border border-black"
+                                            style={{ backgroundColor: area.color }}
+                                        />
+                                        <span className="flex-1 truncate">
+                                            {area.id.padStart(2, '0')}. {i18n.language === 'en' ? area.name : area.nameVi}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </div>
 
@@ -127,27 +161,31 @@ const InteractiveMap = () => {
                     {selectedArea ? (
                         <motion.div
                             key={selectedArea.id}
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            className="p-4 bg-black/60 border border-ftc-green/30 rounded mt-auto relative"
+                            exit={{ opacity: 0, y: 20 }}
+                            className="p-5 bg-white border-4 border-black shadow-[4px_4px_0px_0px_black] relative overflow-hidden"
                         >
-                            <div className="absolute top-0 right-0 p-1">
-                                <button onClick={() => setSelectedArea(null)} className="text-gray-500 hover:text-white"><X size={14} /></button>
-                            </div>
-                            <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-bold text-lg text-ftc-green text-glow font-sans uppercase">
-                                    {i18n.language === 'en' ? selectedArea.name : selectedArea.nameVi}
-                                </h4>
+                            <div className="absolute top-2 right-2">
+                                <button onClick={() => setSelectedArea(null)} className="p-1 text-black hover:scale-110 transition-transform"><X size={20} /></button>
                             </div>
 
-                            <p className="text-sm text-gray-300 font-mono leading-relaxed">
-                                &gt; {i18n.language === 'en' ? selectedArea.description : selectedArea.descriptionVi}
+                            <h4 className="font-black text-xl text-black mb-3 font-mono uppercase italic">
+                                {i18n.language === 'en' ? selectedArea.name : selectedArea.nameVi}
+                            </h4>
+
+                            <p className="text-sm text-gray-800 font-sans leading-relaxed font-bold">
+                                {i18n.language === 'en' ? selectedArea.description : selectedArea.descriptionVi}
                             </p>
+
+                            <div className="mt-4 pt-4 border-t-2 border-black flex justify-between items-center text-[10px] font-black font-mono text-black">
+                                <span className="uppercase">Zone {selectedArea.id}</span>
+                                <span className="uppercase">{selectedArea.category}</span>
+                            </div>
                         </motion.div>
                     ) : (
-                        <div className="p-4 bg-white/5 border border-dashed border-gray-700 text-gray-500 text-center italic mt-auto font-mono text-xs">
-                    // {t('map.instruction')}
+                        <div className="p-6 bg-black/5 border-4 border-dashed border-black/20 text-black/40 text-center font-black italic font-mono text-xs">
+                            &gt;// SELECT_AREA_FOR_INTEL
                         </div>
                     )}
                 </AnimatePresence>
