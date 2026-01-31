@@ -25,9 +25,9 @@ const InteractiveMap = () => {
     }, [categories]);
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 h-full min-h-[700px] relative text-black">
+        <div className="flex flex-col lg:flex-row gap-8 relative text-black h-fit lg:h-full">
             {/* Map Container - Flat Retro Style */}
-            <div className="flex-1 bg-white border-4 border-black relative overflow-hidden shadow-[8px_8px_0px_0px_black] group">
+            <div className="flex-1 bg-white border-4 border-black relative overflow-hidden shadow-[8px_8px_0px_0px_black] group aspect-[1.78] lg:aspect-auto self-start w-full">
                 <TransformWrapper
                     initialScale={1}
                     minScale={0.5}
@@ -37,14 +37,14 @@ const InteractiveMap = () => {
                     {({ zoomIn, zoomOut, resetTransform }) => (
                         <>
                             {/* Controls */}
-                            <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
-                                <button onClick={() => zoomIn()} className="w-12 h-12 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-2xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">+</button>
-                                <button onClick={() => zoomOut()} className="w-12 h-12 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-2xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">-</button>
-                                <button onClick={() => resetTransform()} className="w-12 h-12 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">R</button>
+                            <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+                                <button onClick={() => zoomIn()} className="w-10 h-10 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">+</button>
+                                <button onClick={() => zoomOut()} className="w-10 h-10 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-xl shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">-</button>
+                                <button onClick={() => resetTransform()} className="w-10 h-10 bg-white text-black font-black border-4 border-black hover:bg-black hover:text-white transition-all flex items-center justify-center text-lg shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none">R</button>
                             </div>
 
                             <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
-                                <div className="relative w-full h-full min-h-[700px] bg-white flex items-center justify-center p-4">
+                                <div className="relative w-full h-full bg-white flex items-center justify-center p-2">
                                     <div
                                         className="relative w-full max-w-[1200px] aspect-[1.78]"
                                         style={{ willChange: 'transform' }}

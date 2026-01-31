@@ -19,6 +19,7 @@
         "title": "Resource Access"
     },
     "home": {
-        "description": "International robotics tournament for students from Vietnam and around the world."
+        "description": "International robotics tournament for students from Vietnam and around the world.",
+        "fullscreen": "Fullscreen"
     }
 }

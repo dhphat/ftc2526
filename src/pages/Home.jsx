@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Map, Calendar, Link as LinkIcon, Shield, ExternalLink } from 'lucide-react';
+import { Map, Calendar, Link as LinkIcon, Shield, ExternalLink, Maximize, Minimize } from 'lucide-react';
 import GameButton from '../components/UI/GameButton';
 import { getSettings } from '../components/Settings/settingsManager';
 import { getLinks } from '../components/Links/linkManager';
@@ -13,6 +13,7 @@ const Home = () => {
         heroTitleImage: ''
     });
     const [links, setLinks] = useState([]);
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -21,6 +22,13 @@ const Home = () => {
         };
         loadSettings();
         fetchLinks();
+
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
     }, []);
 
     const fetchLinks = async () => {
@@ -28,8 +36,28 @@ const Home = () => {
         setLinks(fetched);
     };
 
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch((err) => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    };
+
     return (
         <div className="h-full flex flex-col items-center py-12 gap-16 relative z-10 text-black">
+            {/* Fullscreen Button */}
+            <div className="absolute top-4 right-4 z-50">
+                <button
+                    onClick={toggleFullscreen}
+                    className="flex items-center gap-2 bg-white border-4 border-black px-4 py-2 font-black uppercase text-xs shadow-[4px_4px_0px_0px_black] hover:bg-black hover:text-white transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
+                >
+                    {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+                    {t('home.fullscreen')}
+                </button>
+            </div>
 
             {/* Navigation Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl px-4 order-1">
